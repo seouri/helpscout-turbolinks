@@ -7,9 +7,32 @@
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application' %>
+    <%= stylesheet_pack_tag 'application' %>
+    <!-- Beacon embed script (without 'init' call) -->
+    <script type="text/javascript">!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});</script>
+    <%= javascript_include_tag 'https://cdn.auth0.com/js/lock/11.2.3/lock.min.js' %> 
+    <!-- Event listener to 'destroy' Beacon after navigating to a different page using Turbolinks -->
+    <script>
+      document.addEventListener('turbolinks:visit', function() {
+        window.Beacon('destroy')
+      })
+    </script>
   </head>
 
   <body>
+    <ul>
+      <li><%= link_to "Menu 1", pages_menu1_path %></li>
+      <li><%= link_to "Menu 2", pages_menu2_path %></li>
+    </ul>
     <%= yield %>
+      <!-- Beacon 'init' and 'config' calls are in the <body> so that they get re-evaluated on every page visit. -->
+      <!-- We also make sure that we don't call these methods if we're viewing a Turbolinks "preview" instead of the final result. -->
+      <script>
+        if (!document.documentElement.hasAttribute("data-turbolinks-preview")) {
+          window.Beacon('init', 'e06412de-319d-4724-ab76-dbbeaf8da796')
+          window.Beacon('config', { display: { style: 'icon', iconImage: 'message' } } )
+        }
+      </script>
   </body>
 </html>
